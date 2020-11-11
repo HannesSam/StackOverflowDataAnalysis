@@ -1,6 +1,6 @@
 ### JupyterNotebook ###
 .ipynb_checkpoints
-.Data
+.Data.csv
 */.ipynb_checkpoints/*
 
 # Remove previous ipynb_checkpoints
