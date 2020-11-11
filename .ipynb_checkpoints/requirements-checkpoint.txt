@@ -1,0 +1,7 @@
+pandas
+textmining3
+wordcloud
+matplotlib
+mlxtend
+graphviz
+scikit-learn
