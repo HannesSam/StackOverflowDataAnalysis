@@ -1,64 +1,59 @@
+# Importing the necessary libraries
 import pandas as pd
 from collections import Counter
 import nltk
-
-# Tar bort varningarna för ett fel som vi kan ignorera
+# Ignore warnings for a specific error that we can ignore in this application
 pd.options.mode.chained_assignment = None  # default='warn'
 
-# Läser in vår data från csv filen
-stackOverflow = pd.read_csv(
+# Read our data from the data.csv file
+stackOverflowData = pd.read_csv(
     './Data.csv',
     encoding='utf-8'
 )
 
-# Skriver ut storleken på vårt dataset
+# Print the size of the dataset read
 print('Number of Rows and Columns:')
-print(stackOverflow.shape)
+print(stackOverflowData.shape)
 
-# Printar ut namnen på att columns som finns i datasetet
-listOfColumnNames = stackOverflow.columns.values.tolist()
-print('\nColumn names:')
+# Print the column names of the data
+listOfColumnNames = stackOverflowData.columns.values.tolist()
+print('Column names:')
 for name in listOfColumnNames:
     print(name)
 
-# Ändra här för att ta med fler columns in i dataFramen
-df = stackOverflow[['AcceptedAnswerId', 'Title',
-                    'CreationDate', 'Body']]
+# Print the dates from wich this data is produced
+minValue = stackOverflowData['CreationDate'].min()
+maxValue = stackOverflowData['CreationDate'].max()
+print('Dates from wich the data is produced: ' +
+      minValue + ' to ' + maxValue)
 
-# Denna rad funkar inte men det som ska göras här är att om raden för AcceptedAnswerId inte är tom så ska raden bort då vi letar efter frågor utan
-# ett accepterat svar
+# Creating a Data Frame with only the necessary columns
+df = stackOverflowData[['AcceptedAnswerId', 'Title',
+                        'CreationDate', 'Body']]
+
+# This is not implemented yet but here we will remove all rows witch have an accepted answer
 #df = df.loc[df['AcceptedAnswerId'] != '']
 
-# Printar ut från vilka datum som vår data kommer ifrån
-minValue = df['CreationDate'].min()
-maxValue = df['CreationDate'].max()
-print('\nDatum mellan vilka datan är tagen ifrån: ' +
-      minValue + ' & ' + maxValue + '\n')
-
-
-# Sätter värdena i title och body till lowercase
-df['Title'] = df['Title'].str.lower()
+# Setting the neccessary data to lowercase
 df['Body'] = df['Body'].str.lower()
 
-
-# Denna funkar men vi måste göra den mer sofistikerad då meningarna ofta hänger ihop med html taggarna och därmed inte tas bort
-# Därför jag tex skrivit '<p>i' här nere för att visa att det funkar men detta måste kunna göras på ett bättre sätt.
-# Kanske börja med att köra igenom koden och lägga till ett space efter och innan varje html tagg?
+# List of words that we want to remove from the dataset
+# We need a method to remove html tags like <p> that are right next to words without a space in between
 stopWords = ['code', 'gt', 'i', '<p>i']
 
-# Tar bort alla stopWords från Body
+# Remove all the stopwords from the data
 df['Body'] = df['Body'].apply(lambda x: ' '.join(
     [word for word in x.split() if word not in (stopWords)]))
 
-# Print för att testa stopWords funktionen
+# Print to test the remove stopwords function
 print('Testa StopWords funktionen: \n')
 print(df['Body'].head(4) + '\n')
 
-# Denna skapar en lista över de vanligaste orden. Du ändrar hur många ord den ska ta med genom variabeln här under
+# Create a list of the top appearing words. The nrOfWords variable defines how many words the list should contain.
 nrOfWords = 10
 rslt = Counter(' '.join(df['Body']).split()).most_common(nrOfWords)
 
-# Printar ut listan med de vanligaste orden
+# Print out the list created above.
 print('\n')
 for word in rslt:
     print('{} = {}'.format(word[1], word[0]))
